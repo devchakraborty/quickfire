@@ -2,7 +2,7 @@
   "name": "quickfire",
   "version": "0.1.2",
   "description": "QuickFire is a quick way to get up and running with Firebase on Node.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "build": "node_modules/.bin/babel src --out-dir lib",
     "postversion": "git push && git push --tags",
