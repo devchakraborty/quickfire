@@ -3,6 +3,7 @@ import firebase from 'firebase'
 import natural from 'natural'
 import uuid from 'node-uuid'
 import _ from 'lodash'
+import changeCase from 'change-case'
 
 ['FIREBASE_API_KEY', 'FIREBASE_AUTH_DOMAIN', 'FIREBASE_DATABASE_URL', 'FIREBASE_STORAGE_BUCKET'].forEach((key) => {
   if (process.env[key] == null) {
@@ -38,7 +39,7 @@ export default class Model {
 
   static nameSingular() {
     let model = this
-    return model.name.toLowerCase()
+    return changeCase.snakeCase(model.name.toLowerCase())
   }
 
   static namePlural() {
