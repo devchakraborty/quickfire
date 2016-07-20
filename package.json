@@ -8,7 +8,7 @@
     "postversion": "git push && git push --tags",
     "preversion": "npm test",
     "test": "exit 0",
-    "version": "npm run build && git add -A lib"
+    "version": "rm -rf lib && npm run build && git add -A lib"
   },
   "repository": {
     "type": "git",
