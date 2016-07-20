@@ -67,7 +67,7 @@ export default class Model {
   static create(attrs={}) {
     let model = this
     return co(function*() {
-      let objectId = uuid.v1()
+      let objectId = attrs.id || uuid.v4()
       let objectsRef = database.ref(`${model.namePlural()}`)
       let objectValues = _.assign(attrs, {
         id: objectId,
