@@ -23,8 +23,15 @@ Currently supported methods:
 ```javascript
 co(function*() { // Use co to avoid callback hell, but you can use promises if you want
   // Create an article
-  let article = yield Article.create({title: "Super provocative headline", url: "https://www.clickbaitnews.com"})
-  let updatedArticle = yield article.update({title: "More reasonable headline"})
+  let article = yield Article.create({
+    title: "Super provocative headline",
+    url: "https://www.clickbaitnews.com"
+  })
+
+  // Update that article
+  let updatedArticle = yield article.update({
+    title: "More reasonable headline"
+  })
 
   let articleId = updatedArticle.id // UUID
   let articleCreatedAt = updatedArticle.createdAt // Set automatically upon .create()
@@ -32,7 +39,7 @@ co(function*() { // Use co to avoid callback hell, but you can use promises if y
 
   let sameArticle = yield Article.find(articleId) // Look up by UUID
   let numArticles = yield Article.count() // Number of articles, 1
-  
+
   yield sameArticle.delete()
 })
 ```
