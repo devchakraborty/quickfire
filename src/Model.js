@@ -117,6 +117,20 @@ export default class Model {
     })
   }
 
+  set(attrs={}) {
+    let model = this.constructor
+    let self = this
+    return co(function*() {
+      let keys = Object.keys(attrs)
+      keys.push('id', 'createdAt', 'updatedAt')
+      let objectRef = database.ref(`${model.namePlural()}/${self.id}`)
+      yield objectRef.transaction((current) => {
+        return _.assign({}, _.pick(current, keys), _.omit(attrs, 'id', 'createdAt', 'updatedAt'), {updatedAt: firebase.database.ServerValue.TIMESTAMP})
+      })
+      return yield model.find(self.id)
+    })
+  }
+
   destroy() {
     let model = this.constructor
     let self = this

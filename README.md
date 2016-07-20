@@ -18,28 +18,34 @@ Currently supported methods:
 - `Model.find(id)`
 - `Model.count()`
 - `modelInstance.update(attributes)`
+- `modelInstance.set(attributes)`
 - `modelInstance.delete()`
 
 ```javascript
 co(function*() { // Use co to avoid callback hell, but you can use promises if you want
   // Create an article
-  let article = yield Article.create({
+  var article = yield Article.create({
     title: "Super provocative headline",
     url: "https://www.clickbaitnews.com"
   })
 
-  // Update that article
-  let updatedArticle = yield article.update({
+  // Update only the title key
+  article = yield article.update({
     title: "More reasonable headline"
   })
 
-  let articleId = updatedArticle.id // UUID
-  let articleCreatedAt = updatedArticle.createdAt // Set automatically upon .create()
-  let articleUpdatedAt = updatedArticle.updatedAt // Set automatically upon .create(), .update()
+  // Replace all keys (except id, createdAt, updatedAt)
+  article = yield article.set({
+    content: "Persuasive article content."
+  })
+
+  let articleId = article.id // UUID
+  let articleCreatedAt = article.createdAt // Set automatically upon .create()
+  let articleUpdatedAt = article.updatedAt // Set automatically upon .create(), .update(), .set()
 
   let sameArticle = yield Article.find(articleId) // Look up by UUID
   let numArticles = yield Article.count() // Number of articles, 1
 
-  yield sameArticle.delete()
+  yield article.delete() // Delete the article
 })
 ```
