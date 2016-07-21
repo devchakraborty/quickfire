@@ -144,7 +144,7 @@ export default class Model {
     return co(function*() {
       let keysRef = database.ref(`${model.namePlural()}/_ids`)
       let keysSnapshot = yield keysRef.once('value')
-      let keysRoot = keysSnapshot.val()
+      let keysRoot = keysSnapshot.val() || {}
       return Object.keys(keysRoot)
     })
   }
