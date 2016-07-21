@@ -70,8 +70,8 @@ export default class Model {
         } else {
           current._count += 1
         }
-        if (current._keys == null) {
-          current._keys = {}
+        if (current._ids == null) {
+          current._ids = {}
         }
         current._ids[objectId] = true
         current[objectId] = objectValues
