@@ -128,6 +128,7 @@ export default class Model {
     return co(function*() {
       let objectsRef = database.ref(model.namePlural())
       yield objectsRef.transaction((current) => {
+        if (current == null) current = {}
         if (current[self.id]) {
           current._count -= 1
           current._ids[self.id] = null
