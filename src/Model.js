@@ -5,19 +5,6 @@ import uuid from 'node-uuid'
 import _ from 'lodash'
 import changeCase from 'change-case'
 
-['FIREBASE_API_KEY', 'FIREBASE_AUTH_DOMAIN', 'FIREBASE_DATABASE_URL', 'FIREBASE_STORAGE_BUCKET'].forEach((key) => {
-  if (process.env[key] == null) {
-    throw new Error(`Missing env var ${key}.`)
-  }
-})
-
-firebase.initializeApp({
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.FIREBASE_DATABASE_URL,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET
-})
-
 let database = firebase.database()
 
 export default class Model {
@@ -39,7 +26,7 @@ export default class Model {
 
   static nameSingular() {
     let model = this
-    return changeCase.snakeCase(model.name.toLowerCase())
+    return changeCase.snakeCase(changeCase.noCase(model.name.toLowerCase()))
   }
 
   static namePlural() {
@@ -83,6 +70,10 @@ export default class Model {
         } else {
           current._count += 1
         }
+        if (current._keys == null) {
+          current._keys = {}
+        }
+        current._ids[objectId] = true
         current[objectId] = objectValues
         return current
       })
@@ -135,16 +126,50 @@ export default class Model {
     let model = this.constructor
     let self = this
     return co(function*() {
-      let objectsRef = database.ref(`${model.namePlural()}`)
-      console.log(yield objectsRef.once('value'))
+      let objectsRef = database.ref(model.namePlural())
       yield objectsRef.transaction((current) => {
         if (current[self.id]) {
           current._count -= 1
+          current._ids[self.id] = null
           current[self.id] = null
         }
         return current
       })
       return
+    })
+  }
+
+  static allIds() {
+    let model = this
+    return co(function*() {
+      let keysRef = database.ref(`${model.namePlural()}/_keys`)
+      let keysSnapshot = yield keysRef.once('value')
+      let keysRoot = keysSnapshot.val()
+      return Object.keys(keysRoot)
+    })
+  }
+
+  static select(filter=_.stubTrue) {
+    let model = this
+    return co(function*() {
+      let keys = yield model.allIds()
+      let objects = keys.map(key => model.find(key))
+      return _.filter(yield objects, object => filter(object.val()))
+    })
+  }
+
+  static all() {
+    let model = this
+    return model.select()
+  }
+
+  static sample(num, filter=_.stubTrue) {
+    let model = this
+    return co(function*() {
+      let objects = yield model.select(filter)
+      let result = _.sampleSize(objects, num || 1)
+      if (!num) return _.first(result)
+      return result
     })
   }
 }
