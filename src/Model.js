@@ -1,7 +1,7 @@
 import co from 'co'
 import firebase from 'firebase'
 import natural from 'natural'
-import uuid from 'node-uuid'
+import uuid from 'uuid'
 import _ from 'lodash'
 import changeCase from 'change-case'
 
